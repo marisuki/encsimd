@@ -18,7 +18,7 @@ void read_from_encoded_file(std::string path, long bias, long length, int32_t* b
     std::ifstream file(path, std::ifstream::in | std::ifstream::binary | std::ifstream::beg);
     while(file.is_open() && !file.eof()) {
         file.read((char*)&tmp, sizeof tmp);
-        printf("%d ", tmp);
+        //printf("%d ", tmp);
         if(bias != 0) {
             bias --; continue;
         }
@@ -222,6 +222,7 @@ struct Schema {
             //printf("R %d %d %d %d\n", buffer[0], buffer[1], buffer[2], buffer[3]);
             fread_bias[i] += 5;
         }
+        printf("xx\n");
     }
     void readFiles(int attr, int &length, int32_t* bufferDelta, int32_t* bufferRLE) {
         int bias = read_upd_bias(attr, length);
@@ -980,6 +981,7 @@ void Ours(Schema schema, int qid, int cols, double selectivity, int pc, int b) {
 void Scalar(Schema schema, int qid, int cols, double selectivity) {
     DTARLE *data = (DTARLE*) malloc((schema.attr_num+2)*sizeof(DTARLE));
     DTARLE time = DTARLE(schema, -1);
+    printf("xx\n");
     time.decode_scalar16();
     for(int i=0;i<schema.attr_num;i++) {
         data[i] = DTARLE(schema, i);
@@ -999,19 +1001,26 @@ void SBoost(Schema schema, int qid, int cols, double selectivity, int pc) {
     }
 }
 
+int64_t planx(int r, int attr, int aggcorr, int aggavg) {
+
+}
+
 int main() {
+    printf("xx\n");
     std::vector<std::string> arr;
-    std::string tmp = "./data/climate/";
+    std::string tmp = "./data/climate1p/";
     for(int i=1;i<12;i++) {
         std::string t1 = tmp;
         char buff[123];
         t1.append(itoa(i, buff, 10));
+        printf("%s\n", t1.c_str());
         arr.insert(arr.begin()+i-1, t1);
     }
-    Schema schema = Schema("./data/climate/", arr, 12);
+    Schema schema = Schema(tmp, arr, 12);
+    printf("xx\n");
     for(int i=1;i<10;i++) {
         int64_t time = timeSinceEpochMillisec();
-        Scalar(schema, 1, i, 0.5);
+        Scalar(schema, 4, i, 0.5);
         printf("%ld\n", timeSinceEpochMillisec()-time);
     }
     
