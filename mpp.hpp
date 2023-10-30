@@ -197,5 +197,5 @@ __m256i count_filter(
     __m256i& vc1, __m256i& vc2
 );
 
-
+#pragma once
 #endif

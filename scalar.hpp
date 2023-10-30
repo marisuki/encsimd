@@ -1,3 +1,7 @@
+#ifndef SCALAR_H
+#define SCALAR_H
+
+
 #include "mpp.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +34,7 @@ private:
         dec_sz = loc;
     }
     void apply(int An) {
-        for(int i=0;i<loc;i++){
+        for(int i=0;i<len;i++){
             dec[i] += An;
         }
     }
@@ -167,3 +171,6 @@ public:
 //         return res;
 //     }
 // };
+
+#pragma once
+#endif

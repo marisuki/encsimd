@@ -1,9 +1,13 @@
+#ifndef SCHEMA_H
+#define SCHEMA_H
+
 #include "mpp.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <set>
 #include <vector>
+#include <string>
 
 
 void read_from_encoded_file(std::string path, long bias, long length, int32_t* buffer) {
@@ -31,6 +35,7 @@ struct Header {
 };
 
 class Schema {
+private:
     std::string timestampFiles; // multiple: cpu/t/1, 2, 3...
     std::vector<std::string> attrFiles; // each files common: cpu/1/...
     Header timeDeltaHeader; Header timeRLEHeader;
@@ -40,6 +45,7 @@ class Schema {
     int* fread_bias;
     int* file_counter;
     int attr_num;
+public:
     Schema() {}
     Schema(std::string timestampFiles, std::vector<std::string> attrFiles, int attr_num) {
         this->timestampFiles = timestampFiles;
@@ -51,6 +57,7 @@ class Schema {
         this->file_counter = (int*) malloc((attr_num + 4)*(sizeof(int)));
         init();
     }
+    int get_attr_num() { return this->attr_num; }
     void init() {
         int32_t buffer[10]; memset(buffer, 0, 10*sizeof(int32_t));
 
@@ -129,6 +136,13 @@ class Schema {
             return attrDeltaheaders[attr].bitlen;
         }
     }
+    int bitlen_RLE(int attr) {
+        if(attr == -1) {
+            return timeDeltaHeader.bitlen;
+        } else {
+            return attrRLEheaders[attr].bitlen;
+        }
+    }
     int start_(int attr) {
         if(attr == -1) {
             return timeDeltaHeader.start;
@@ -152,7 +166,7 @@ class Schema {
     }
     std::string current_file(int attr, bool delta) {
         std::string res;
-        char bytes[10];
+        //char bytes[10];
         if(attr == -1) {
             //itoa(time_counter, bytes, 10);
             std::string tmp = timestampFiles;
@@ -164,20 +178,22 @@ class Schema {
                 res = tmp.append("t").append("-rle-r.bp0");
             }
         } else {
-            itoa(attr + 1, bytes, 10);
+            std::string tmpx = std::to_string(attr + 1);
+            //std::itoa(attr + 1, bytes, 10);
             std::string tmp = attrFiles.at(attr);
             if(delta) {
                 //res = attrFiles[attr].append("t").append(bytes).append("-rle-d.b");
-                res = tmp.append(bytes).append("-rle-d.bp0");
+                res = tmp.append(tmpx).append("-rle-d.bp0");
             }
             else {
                 //res = attrFiles[attr].append("t").append(bytes).append("-rle-r.b");
-                res = tmp.append(bytes).append("-rle-r.bp0");
+                res = tmp.append(tmpx).append("-rle-r.bp0");
             }
         }
         return res;
     }
-    int cost() {
-
-    }
 };
+
+
+#pragma once
+#endif

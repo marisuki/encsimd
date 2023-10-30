@@ -1,3 +1,7 @@
+#ifndef SEQRLE_H
+#define SEQRLE_H
+
+
 #include "mpp.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,11 +73,12 @@ sequentialRLE<dtaIn, rleIn>::sequentialRLE(dtaIn* dta, rleIn* rle, std::set<int>
 
 template<typename dtaIn, typename rleIn> 
 void sequentialRLE<dtaIn, rleIn>::skip(int skip) {
-    if(loc == )
     if(skip > rle_rest) {
         ps += (dta[loc] + minimum)*rle_rest;
         int next = skip-rle_rest;
-        loc++; rle_rest = (int) rle[loc] + minimumRLE; 
+        loc++; 
+        if(loc == len) return;
+        rle_rest = (int) rle[loc] + minimumRLE; 
         this->skip(next);
     } else {
         ps += (dta[loc] + minimum)*skip;
@@ -87,7 +92,9 @@ void sequentialRLE<dtaIn, rleIn>::aggregate(int valid_n) {
         aggregate_func(rle_rest);
         ps += (dta[loc] + minimum)*rle_rest;
         int next = valid_n-rle_rest;
-        loc++; rle_rest = (int) rle[loc] + minimumRLE; 
+        loc++; 
+        if(loc == len) return;
+        rle_rest = (int) rle[loc] + minimumRLE; 
         this->aggregate(next);
     } else {
         aggregate_func(valid_n);
@@ -115,20 +122,23 @@ long sequentialRLE<dtaIn, rleIn>::extract(int agg_x) {
     return this->res[agg_x];
 }
 
-int main() {
-    int16_t delta[100];
-    int16_t rle[100];
-    for(int i=0;i<100;i++) {
-        delta[i] = (int16_t) random_i32();
-        rle[i] = std::max((int16_t) 1, (int16_t) random_i32());
-    }
-    std::set<int> aggfun;
-    aggfun.insert(0); aggfun.insert(1); aggfun.insert(2);  
-    sequentialRLE<int16_t, int16_t> seqsc(delta, rle, aggfun, 20, 1, 100);
-    for(int i=0;i<200;i++) {
-        int pos = random_i32()%16;
-        int valid = random_i32()%16;
+// int main() {
+//     int16_t delta[100];
+//     int16_t rle[100];
+//     for(int i=0;i<100;i++) {
+//         delta[i] = (int16_t) random_i32();
+//         rle[i] = std::max((int16_t) 1, (int16_t) random_i32());
+//     }
+//     std::set<int> aggfun;
+//     aggfun.insert(0); aggfun.insert(1); aggfun.insert(2);  
+//     sequentialRLE<int16_t, int16_t> seqsc(delta, rle, aggfun, 20, 1, 100);
+//     for(int i=0;i<200;i++) {
+//         int pos = random_i32()%16;
+//         int valid = random_i32()%16;
 
-    }
-    return 0;
-}
+//     }
+//     return 0;
+// }
+
+#pragma once
+#endif
